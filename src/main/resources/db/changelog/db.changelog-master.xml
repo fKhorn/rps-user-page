@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.10.xsd">
+
+    <!-- Создание структуры базы данных -->
+    <include file="db/changelog/01-create-tables.xml"/>
+
+    <!-- Добавление ролей и администратора -->
+    <include file="db/changelog/02-insert-roles-and-admin.xml"/>
+
+</databaseChangeLog>
