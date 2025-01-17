@@ -13,15 +13,20 @@ body {
 .login-container {
     background: white;
     padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 300px;
+    width: 320px;
+    transition: transform 0.2s;
+}
+
+.login-container:hover {
+    transform: scale(1.02);
 }
 
 /* Заголовок */
 .login-container h2 {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     color: #333;
 }
 
@@ -39,20 +44,52 @@ body {
 
 .input-group input {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease-in-out;
 }
 
-/* Кнопка */
+.input-group input:focus {
+    border-color: #0072ff;
+    outline: none;
+}
+
+/* Обертка для пароля */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    flex: 1;
+}
+
+.password-wrapper button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    color: #555;
+}
+
+.password-wrapper button:hover {
+    color: #0072ff;
+}
+
+/* Кнопка логина */
 button {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background-color: #0072ff;
     border: none;
     color: white;
     font-size: 1rem;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     transition: background 0.3s ease-in-out;
 }
@@ -61,11 +98,28 @@ button:hover {
     background-color: #0056b3;
 }
 
-/* Сообщения об ошибке / выходе */
+/* Индикатор загрузки */
+.loading-spinner {
+    display: none;
+    margin: 10px auto;
+    width: 25px;
+    height: 25px;
+    border: 4px solid #ddd;
+    border-top: 4px solid #0072ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Сообщения об ошибке / успехе */
 .error-message, .success-message {
     margin-top: 1rem;
     font-size: 0.9rem;
-    padding: 8px;
+    padding: 10px;
     border-radius: 4px;
 }
 
@@ -77,4 +131,14 @@ button:hover {
 .success-message {
     background: #28a745;
     color: white;
+}
+
+/* Ссылка на восстановление пароля */
+p a {
+    color: #0072ff;
+    text-decoration: none;
+}
+
+p a:hover {
+    text-decoration: underline;
 }
