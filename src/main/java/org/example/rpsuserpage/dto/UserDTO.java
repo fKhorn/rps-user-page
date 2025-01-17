@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.rpsuserpage.enums.Role;
+
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -18,5 +21,5 @@ public class UserDTO {
     private String email;
     private String username;
     private String password; // только для создания или обновления
-    private String role;
+    private Set<Role> roles;
 }

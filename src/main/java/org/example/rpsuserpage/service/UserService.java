@@ -1,10 +1,10 @@
 package org.example.rpsuserpage.service;
 
 import org.example.rpsuserpage.dto.UserDTO;
+import org.example.rpsuserpage.entity.RoleEntity;
 import org.example.rpsuserpage.entity.UserEntity;
 import org.example.rpsuserpage.enums.Role;
 import org.example.rpsuserpage.mapper.UserMapper;
-import org.example.rpsuserpage.repository.RoleRepository;
 import org.example.rpsuserpage.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, RoleService roleService, UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+        this.roleService = roleService;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }
@@ -41,8 +41,17 @@ public class UserService {
 
     public UserDTO createUser(UserDTO userDTO) {
         UserEntity userEntity = userMapper.toEntity(userDTO);
+
+        // 🔹 Кодируем пароль перед сохранением
         userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        userEntity.setRoles(Set.of(roleRepository.findByName(Role.getRole(userDTO.getRole())).orElseThrow(() -> new RuntimeException("Role not found"))));
+
+        // 🔹 Получаем список RoleEntity из БД по ролям, переданным в DTO
+        Set<RoleEntity> roles = userDTO.getRoles().stream()
+                .map(roleService::findByName)
+                .collect(Collectors.toSet());
+
+        userEntity.setRoles(roles);
+
         return userMapper.toDTO(userRepository.save(userEntity));
     }
 
@@ -65,7 +74,11 @@ public class UserService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-        return userMapper.toDTO(userEntity);
+        UserDTO userDTO = userMapper.toDTO(userEntity);
+        userDTO.setRoles(userEntity.getRoles().stream()
+                .map(role -> Role.getRole(role.getName().name())) // Преобразуем RoleEntity в String
+                .collect(Collectors.toSet()));
+        return userDTO;
     }
 
     public UserDTO updateCurrentUser(UserDTO userDTO) {
@@ -78,4 +91,6 @@ public class UserService {
         }
         return userMapper.toDTO(userRepository.save(userEntity));
     }
+
+
 }

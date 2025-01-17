@@ -1,6 +1,8 @@
 package org.example.rpsuserpage.controller;
 
+import org.example.rpsuserpage.dto.RoleDTO;
 import org.example.rpsuserpage.dto.UserDTO;
+import org.example.rpsuserpage.service.RoleService;
 import org.example.rpsuserpage.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -9,13 +11,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("")
 public class UserController {
 
     private final UserService userService;
+    private final RoleService roleService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     // ==== Эндпоинты для администратора ====
@@ -24,6 +28,11 @@ public class UserController {
     @GetMapping("/admin/users")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    @GetMapping("/admin/roles")
+    public List<RoleDTO> getAllRoles() {
+        return roleService.getAllRoles();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -47,8 +56,7 @@ public class UserController {
 
     // ==== Эндпоинты для пользователя ====
 
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping("/user")
+    @GetMapping("/me")
     public ResponseEntity<UserDTO> getCurrentUser() {
         return ResponseEntity.ok(userService.getCurrentUser());
     }

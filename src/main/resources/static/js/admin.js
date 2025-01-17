@@ -3,23 +3,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const currentUserLogin = document.getElementById("currentUserLogin");
     const currentUserRoles = document.getElementById("currentUserRoles");
     const rolesSelect = document.getElementById("rolesNew");
+    const formNewUser = document.getElementById("formNewUser"); // ✅ Исправлено, переменная отсутствовала
 
-    const apiBaseUrl = "/admin/users"; // Обновляем URL API
+    const apiBaseUrl = "/admin/users"; // URL API
     const apiCurrentUserUrl = "/me"; // Запрос текущего пользователя
+    const apiRolesUrl = "/admin/roles"; // URL для загрузки доступных ролей
 
     // 📌 Получение текущего пользователя
-    fetch(apiCurrentUserUrl)
-        .then(response => {
-            console.log("Raw response:", response);
-            if (!response.ok) throw new Error("Failed to fetch current user");
-            return response.clone().json() // Используем `clone()`, чтобы избежать `bodyUsed: true`
-                .catch(() => response.text());
-        })
+    fetch(apiCurrentUserUrl, { credentials: "include" })
+        .then(response => response.json())
         .then(data => {
             currentUserLogin.textContent = data.username;
-            document.getElementById("currentUserRoles").textContent = data.roles
-                ? data.roles.map(role => role).join(", ")
-                : "Unknown Role";
+            currentUserRoles.textContent = data.roles ? data.roles.join(", ") : "Unknown Role";
         })
         .catch(error => {
             console.error("Error fetching current user:", error);
@@ -27,26 +22,31 @@ document.addEventListener("DOMContentLoaded", function () {
             currentUserRoles.textContent = "Unknown Role";
         });
 
-    // 📌 Функция загрузки всех пользователей в таблицу
+    // 📌 Загрузка всех пользователей
     function loadUsers() {
         fetch(apiBaseUrl)
-            .then(response => {
-                if (!response.ok) throw new Error("Failed to fetch users");
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 tableUser.innerHTML = data.map(user => `
                     <tr>
-                        <td>${user.id}</td>
                         <td>${user.firstName}</td>
                         <td>${user.username}</td>
-                        <td>${user.roles.map(role => role).join(", ")}</td>
+                        <td>${user.roles.join(", ")}</td>
                         <td>
                             <button class="btn btn-primary btn-sm edit-user" data-id="${user.id}">Edit</button>
                             <button class="btn btn-danger btn-sm delete-user" data-id="${user.id}">Delete</button>
                         </td>
                     </tr>
                 `).join("");
+
+                // Добавляем обработчики кнопок редактирования и удаления
+                document.querySelectorAll(".edit-user").forEach(button => {
+                    button.addEventListener("click", () => editUser(button.dataset.id));
+                });
+
+                document.querySelectorAll(".delete-user").forEach(button => {
+                    button.addEventListener("click", () => deleteUser(button.dataset.id));
+                });
             })
             .catch(error => {
                 console.error("Error loading users:", error);
@@ -61,8 +61,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const newUser = {
             firstName: document.getElementById("firstName").value,
             username: document.getElementById("username").value,
+            email: document.getElementById("email").value,
             password: document.getElementById("password").value,
-            roles: Array.from(document.getElementById("rolesNew").selectedOptions).map(option => option.value)
+            roles: Array.from(rolesSelect.selectedOptions).map(option => option.value) // ✅ Исправлено
         };
 
         fetch(apiBaseUrl, {
@@ -70,22 +71,27 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newUser)
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.message || "Failed to create user");
+                    });
+                }
+                return response.json();
+            })
             .then(() => {
                 formNewUser.reset();
                 loadUsers();
                 alert("User added successfully!");
             })
-            .catch(error => alert("Error adding user: " + error));
+            .catch(error => alert("Error adding user: " + error.message));
     });
 
-    // 📌 Функция удаления пользователя
+    // 📌 Удаление пользователя
     function deleteUser(userId) {
         if (!confirm("Are you sure you want to delete this user?")) return;
 
-        fetch(`${apiBaseUrl}/${userId}`, {
-            method: "DELETE"
-        })
+        fetch(`${apiBaseUrl}/${userId}`, { method: "DELETE" })
             .then(() => {
                 alert("User deleted successfully!");
                 loadUsers();
@@ -93,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => alert("Error deleting user: " + error));
     }
 
-    // 📌 Функция редактирования пользователя
+    // 📌 Редактирование пользователя
     function editUser(userId) {
         const newName = prompt("Enter new first name:");
         if (!newName) return;
@@ -110,17 +116,17 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => alert("Error updating user: " + error));
     }
 
-    loadUsers(); // Загружаем пользователей при загрузке страницы
-
-    // 📌 Функция загрузки доступных ролей
+    // 📌 Загрузка доступных ролей
     function loadRoles() {
-        fetch("/admin/roles")
+        fetch(apiRolesUrl)
             .then(response => response.json())
             .then(roles => {
-                rolesSelect.innerHTML = roles.map(role => `
-                    <option value="${role.name}">${role.name}</option>
-                `).join("");
+                rolesSelect.innerHTML = `<option disabled selected>Выберите роль</option>` +
+                    roles.map(role => `<option value="${role.name}">${role.name}</option>`).join("");
             })
             .catch(error => console.error("Error loading roles:", error));
     }
+
+    loadRoles(); // Загружаем роли при загрузке страницы
+    loadUsers(); // Загружаем пользователей при загрузке страницы
 });

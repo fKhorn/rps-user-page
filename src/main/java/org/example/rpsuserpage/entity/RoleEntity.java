@@ -14,9 +14,11 @@ import jakarta.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class RoleEntity {
 
+    public RoleEntity(Role role) {
+        this.name = role;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -49,3 +49,62 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+/* Общий стиль для select */
+.custom-select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #ced4da;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+
+    /* Убираем стандартную стрелку браузера */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    /* Добавляем кастомный треугольник (стрелку) */
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23007bff' d='M2 5L0 0h4z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px;
+}
+
+/* При фокусе (при выборе пользователем) */
+.custom-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+}
+
+/* Опции внутри выпадающего списка */
+.custom-select option {
+    padding: 10px;
+    font-size: 14px;
+    background-color: white;
+    color: #333;
+}
+
+/* При наведении на опцию */
+.custom-select option:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Добавляем прокрутку, если элементов много */
+.custom-select::-webkit-scrollbar {
+    width: 10px;
+}
+
+.custom-select::-webkit-scrollbar-thumb {
+    background-color: #007bff;
+    border-radius: 5px;
+}
+
+.custom-select::-webkit-scrollbar-track {
+    background-color: #f8f9fa;
+}

@@ -22,7 +22,6 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class UserEntity {
 
     @Id
@@ -33,7 +32,6 @@ public class UserEntity {
     @NotBlank(message = "First name cannot be blank")
     private String firstName;
 
-    @NotBlank(message = "Last name cannot be blank")
     private String lastName;
 
     private Integer age;

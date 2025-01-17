@@ -18,15 +18,15 @@
 
         <!-- Добавляем базового администратора -->
         <insert tableName="users">
-            <column name="id" value="1"/>
             <column name="first_name" value="Admin"/>
             <column name="last_name" value="Adminov"/>
             <column name="age" valueNumeric="30"/>
             <column name="gender" value="MALE"/>
             <column name="email" value="admin@example.com"/>
             <column name="username" value="admin"/>
-            <column name="password" value="$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36ShA1F8Myq8zdfI5K3wgm6"/>
+            <column name="password" value="$2a$10$43mfOEs5HALwXOhABrYeveybAahWbMBGwSR87gbbgCwtL2HvFtFwe"/>
         </insert>
+
 
         <!-- Связываем администратора с ролью ADMIN -->
         <insert tableName="user_roles">
