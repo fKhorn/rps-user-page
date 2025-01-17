@@ -16,12 +16,7 @@ body {
     border-radius: 10px;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 320px;
-    transition: transform 0.2s;
-}
-
-.login-container:hover {
-    transform: scale(1.02);
+    width: 350px; /* Делаем шире */
 }
 
 /* Заголовок */
@@ -42,15 +37,19 @@ body {
     color: #555;
 }
 
-.input-group input {
+/* Выравниваем input и button */
+.input-group input,
+button {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 1rem;
     transition: border-color 0.3s ease-in-out;
+    box-sizing: border-box; /* Убираем несоответствия размеров */
 }
 
+/* Поля ввода */
 .input-group input:focus {
     border-color: #0072ff;
     outline: none;
@@ -65,16 +64,19 @@ body {
 
 .password-wrapper input {
     flex: 1;
+    padding-right: 40px; /* Учитываем кнопку */
 }
 
+/* Кнопка "показать пароль" */
 .password-wrapper button {
+    position: absolute;
+    right: 10px;
     background: none;
     border: none;
     font-size: 1.2rem;
     cursor: pointer;
-    position: absolute;
-    right: 10px;
     color: #555;
+    padding: 5px;
 }
 
 .password-wrapper button:hover {
@@ -83,8 +85,6 @@ body {
 
 /* Кнопка логина */
 button {
-    width: 100%;
-    padding: 12px;
     background-color: #0072ff;
     border: none;
     color: white;
@@ -98,42 +98,7 @@ button:hover {
     background-color: #0056b3;
 }
 
-/* Индикатор загрузки */
-.loading-spinner {
-    display: none;
-    margin: 10px auto;
-    width: 25px;
-    height: 25px;
-    border: 4px solid #ddd;
-    border-top: 4px solid #0072ff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Сообщения об ошибке / успехе */
-.error-message, .success-message {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    padding: 10px;
-    border-radius: 4px;
-}
-
-.error-message {
-    background: #ff4d4d;
-    color: white;
-}
-
-.success-message {
-    background: #28a745;
-    color: white;
-}
-
-/* Ссылка на восстановление пароля */
+/* Исправление для ссылок */
 p a {
     color: #0072ff;
     text-decoration: none;
