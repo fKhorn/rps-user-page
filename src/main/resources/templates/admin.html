@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Page</title>
+    <link rel="stylesheet" href="/css/admin.css">
+    <script defer src="/js/admin.js"></script>
+</head>
+<body>
+<h1>Welcome, <span id="current-user-name"></span></h1>
+<h2>Список всех пользователе</h2>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Roles</th>
+    </tr>
+    </thead>
+    <tbody id="users-table-body">
+    </tbody>
+</table>
+</body>
+</html>
