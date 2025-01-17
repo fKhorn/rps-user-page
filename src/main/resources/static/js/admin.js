@@ -3,7 +3,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const currentUserLogin = document.getElementById("currentUserLogin");
     const currentUserRoles = document.getElementById("currentUserRoles");
     const rolesSelect = document.getElementById("rolesNew");
-    const formNewUser = document.getElementById("formNewUser"); // ✅ Исправлено, переменная отсутствовала
+    const formNewUser = document.getElementById("formNewUser");
+    const editUserModal = document.getElementById("editUserModal");
+    const editUserId = document.getElementById("editUserId");
+    const editFirstName = document.getElementById("editFirstName");
+    const editPassword = document.getElementById("editPassword");
+    const editRoles = document.getElementById("editRoles");
 
     const apiBaseUrl = "/admin/users"; // URL API
     const apiCurrentUserUrl = "/me"; // Запрос текущего пользователя
@@ -17,7 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
             currentUserRoles.textContent = data.roles ? data.roles.join(", ") : "Unknown Role";
         })
         .catch(error => {
-            console.error("Error fetching current user:", error);
             currentUserLogin.textContent = "Unknown User";
             currentUserRoles.textContent = "Unknown Role";
         });
@@ -33,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         <td>${user.username}</td>
                         <td>${user.roles.join(", ")}</td>
                         <td>
-                            <button class="btn btn-primary btn-sm edit-user" data-id="${user.id}">Edit</button>
+<!--                            <button class="btn btn-primary btn-sm edit-user" data-id="${user.id}">Edit</button>-->
                             <button class="btn btn-danger btn-sm delete-user" data-id="${user.id}">Delete</button>
                         </td>
                     </tr>
@@ -89,32 +93,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 📌 Удаление пользователя
     function deleteUser(userId) {
-        if (!confirm("Are you sure you want to delete this user?")) return;
+        if (!confirm("Вы уверены?")) return;
 
         fetch(`${apiBaseUrl}/${userId}`, { method: "DELETE" })
             .then(() => {
-                alert("User deleted successfully!");
+                alert("ользователь удален!");
                 loadUsers();
             })
-            .catch(error => alert("Error deleting user: " + error));
+            .catch(error => alert("Ошибка при удалении: " + error));
     }
 
-    // 📌 Редактирование пользователя
-    function editUser(userId) {
-        const newName = prompt("Enter new first name:");
-        if (!newName) return;
-
-        fetch(`${apiBaseUrl}/${userId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ firstName: newName })
-        })
-            .then(() => {
-                alert("User updated successfully!");
-                loadUsers();
-            })
-            .catch(error => alert("Error updating user: " + error));
-    }
 
     // 📌 Загрузка доступных ролей
     function loadRoles() {
@@ -124,8 +112,74 @@ document.addEventListener("DOMContentLoaded", function () {
                 rolesSelect.innerHTML = `<option disabled selected>Выберите роль</option>` +
                     roles.map(role => `<option value="${role.name}">${role.name}</option>`).join("");
             })
+            .catch(error => console.error("Ошибка при загрузке ролей:", error));
+    }
+
+    // 📌 Редактирование пользователя
+    /*function EditUser(userId) {
+        fetch(`${apiBaseUrl}/${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                editUserId.value = data.id;
+                editFirstName.value = data.firstName;
+                editPassword.value = "";
+                loadEditRoles(data.roles);
+                new bootstrap.Modal(document.getElementById("editUserModal")).show();
+            })
+            .catch(error => console.error("Error fetching user:", error));
+    }
+
+    function loadEditRoles(selectedRoles = []) {
+        fetch(apiRolesUrl)
+            .then(response => response.json())
+            .then(roles => {
+                editRoles.innerHTML = roles.map(role => `
+                    <option value="${role.name}" ${selectedRoles.includes(role.name) ? "selected" : ""}>
+                        ${role.name}
+                    </option>
+                `).join("");
+            })
             .catch(error => console.error("Error loading roles:", error));
     }
+
+    editUserModal.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const updatedUser = {
+            firstName: editFirstName.value,
+            password: editPassword.value || null,
+            roles: Array.from(editRoles.selectedOptions).map(option => option.value)
+        };
+
+        fetch(`${apiBaseUrl}/${editUserId.value}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedUser)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.message || "Failed to update user");
+                    });
+                }
+                return response.json();
+            })
+            .then(() => {
+                loadUsers();
+                alert("User updated successfully!");
+                bootstrap.Modal.getInstance(document.getElementById("editUserModal")).hide();
+            })
+            .catch(error => alert("Error updating user: " + error.message));
+    });*/
+
+    function showLoading() {
+        document.getElementById("loadingIndicator").style.display = "block";
+    }
+
+    function hideLoading() {
+        document.getElementById("loadingIndicator").style.display = "none";
+    }
+
 
     loadRoles(); // Загружаем роли при загрузке страницы
     loadUsers(); // Загружаем пользователей при загрузке страницы
