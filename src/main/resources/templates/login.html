@@ -2,26 +2,41 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Login</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/login.css">
+    <script defer src="/js/login.js"></script>
 </head>
 <body>
 <div class="login-container">
-    <h1>Login</h1>
+    <h2>Добро пожаловать 👋</h2>
+    <p>Please enter your credentials to log in.</p>
+
     <form th:action="@{/login}" method="post">
-        <div>
-            <label for="username">Username:</label>
+        <div class="input-group">
+            <label for="username">Логин</label>
             <input type="text" id="username" name="username" required>
         </div>
-        <div>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+
+        <div class="input-group">
+            <label for="password">Пароль</label>
+            <div class="password-wrapper">
+                <input type="password" id="password" name="password" required>
+                <button type="button" id="toggle-password">👁</button>
+            </div>
         </div>
-        <div>
-            <button type="submit">Login</button>
+
+        <button type="submit" id="login-btn">Login</button>
+
+        <div class="loading-spinner" id="spinner"></div>
+
+        <div class="error-message" th:if="${param.error}">
+            ⚠ Неверное имя пользователя или пароль
+        </div>
+        <div class="success-message" th:if="${param.logout}">
+            ✅ Авторизация прошла успешно
         </div>
     </form>
-    <p th:if="${param.error}" style="color:red;">Invalid username or password</p>
-    <p th:if="${param.logout}" style="color:green;">You have been logged out</p>
+
+    <p><a href="/forgot-password">Забыли пароль?</a></p>
 </div>
 </body>
 </html>
