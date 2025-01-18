@@ -1,30 +1,31 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const tableUser = document.getElementById("tableAllUsers");
-    const currentUserLogin = document.getElementById("currentUserLogin");
-    const currentUserRoles = document.getElementById("currentUserRoles");
-    const rolesSelect = document.getElementById("rolesNew");
-    const formNewUser = document.getElementById("formNewUser");
-    const editUserModal = document.getElementById("editUserModal");
-    const editUserId = document.getElementById("editUserId");
-    const editFirstName = document.getElementById("editFirstName");
-    const editPassword = document.getElementById("editPassword");
-    const editRoles = document.getElementById("editRoles");
+    const tableUser = document.getElementById("tableAllUsers")
+    const currentUserLogin = document.getElementById("currentUserLogin")
+    const currentUserRoles = document.getElementById("currentUserRoles")
+    const rolesSelect = document.getElementById("rolesNew")
+    const formNewUser = document.getElementById("formNewUser")
+    const editUserModal = document.getElementById("editUserModal")
+    const editUserId = document.getElementById("editUserId")
+    const editFirstName = document.getElementById("editFirstName")
+    const editPassword = document.getElementById("editPassword")
+    const editRoles = document.getElementById("editRoles")
 
     const apiBaseUrl = "/admin/users"; // URL API
     const apiCurrentUserUrl = "/me"; // Запрос текущего пользователя
     const apiRolesUrl = "/admin/roles"; // URL для загрузки доступных ролей
 
+    if (!currentUserLogin || !currentUserRoles) {
+        console.error("Ошибка: Не найден элемент currentUserLogin или currentUserRoles в DOM.");
+        return;
+    }
+
     // 📌 Получение текущего пользователя
     fetch(apiCurrentUserUrl, { credentials: "include" })
         .then(response => response.json())
         .then(data => {
-            currentUserLogin.textContent = data.username;
-            currentUserRoles.textContent = data.roles ? data.roles.join(", ") : "Unknown Role";
+            currentUserLogin.textContent = data.username
+            currentUserRoles.textContent = data.roles
         })
-        .catch(error => {
-            currentUserLogin.textContent = "Unknown User";
-            currentUserRoles.textContent = "Unknown Role";
-        });
 
     // 📌 Загрузка всех пользователей
     function loadUsers() {
@@ -91,32 +92,8 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => alert("Error adding user: " + error.message));
     });
 
-    // 📌 Удаление пользователя
-    function deleteUser(userId) {
-        if (!confirm("Вы уверены?")) return;
-
-        fetch(`${apiBaseUrl}/${userId}`, { method: "DELETE" })
-            .then(() => {
-                alert("ользователь удален!");
-                loadUsers();
-            })
-            .catch(error => alert("Ошибка при удалении: " + error));
-    }
-
-
-    // 📌 Загрузка доступных ролей
-    function loadRoles() {
-        fetch(apiRolesUrl)
-            .then(response => response.json())
-            .then(roles => {
-                rolesSelect.innerHTML = `<option disabled selected>Выберите роль</option>` +
-                    roles.map(role => `<option value="${role.name}">${role.name}</option>`).join("");
-            })
-            .catch(error => console.error("Ошибка при загрузке ролей:", error));
-    }
-
     // 📌 Редактирование пользователя
-    /*function EditUser(userId) {
+    function editUser(userId) {
         fetch(`${apiBaseUrl}/${userId}`)
             .then(response => response.json())
             .then(data => {
@@ -170,7 +147,39 @@ document.addEventListener("DOMContentLoaded", function () {
                 bootstrap.Modal.getInstance(document.getElementById("editUserModal")).hide();
             })
             .catch(error => alert("Error updating user: " + error.message));
-    });*/
+    });
+
+    // 📌 Удаление пользователя
+    function deleteUser(userId) {
+        if (!confirm("Вы уверены?")) return;
+
+        fetch(`${apiBaseUrl}/${userId}`, { method: "DELETE" })
+            .then(() => {
+                alert("ользователь удален!");
+                loadUsers();
+            })
+            .catch(error => alert("Ошибка при удалении: " + error));
+    }
+
+
+    // 📌 Загрузка доступных ролей
+    function loadRoles() {
+        fetch(apiRolesUrl)
+            .then(response => response.json())
+            .then(roles => {
+                rolesSelect.innerHTML = `<option disabled selected>Выберите роль</option>` +
+                    roles.map(role => `<option value="${role.name}">${role.name}</option>`).join("");
+            })
+            .catch(error => console.error("Ошибка при загрузке ролей:", error));
+    }
+
+
+
+    function showError(message) {
+        const errorDiv = document.getElementById("errorMessage");
+        errorDiv.textContent = message;
+        errorDiv.classList.remove("d-none");
+    }
 
     function showLoading() {
         document.getElementById("loadingIndicator").style.display = "block";
@@ -184,3 +193,64 @@ document.addEventListener("DOMContentLoaded", function () {
     loadRoles(); // Загружаем роли при загрузке страницы
     loadUsers(); // Загружаем пользователей при загрузке страницы
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.getElementById("sidebar");
+    const toggleSidebar = document.getElementById("toggleSidebar");
+    // const closeSidebar = document.getElementById("closeSidebar");
+
+    toggleSidebar.addEventListener("click", () => {
+        sidebar.classList.add("active");
+    });
+
+    /*closeSidebar.addEventListener("click", () => {
+        sidebar.classList.remove("active");
+    });*/
+
+    // Закрытие сайдбара при клике вне его области
+    document.addEventListener("click", (event) => {
+        if (!sidebar.contains(event.target) && !toggleSidebar.contains(event.target)) {
+            sidebar.classList.remove("active");
+        }
+    });
+
+    // Функции для переключения вкладок
+    function showUsers() {
+        document.getElementById("users").classList.add("show", "active");
+        document.getElementById("new-user").classList.remove("show", "active");
+    }
+
+    function showAddUser() {
+        document.getElementById("new-user").classList.add("show", "active");
+        document.getElementById("users").classList.remove("show", "active");
+    }
+
+    // Экспортируем функции
+    window.showUsers = showUsers;
+    window.showAddUser = showAddUser;
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const logoutButton = document.getElementById("logoutButton");
+
+    if (logoutButton) {
+        logoutButton.addEventListener("click", function (event) {
+            event.preventDefault();
+
+            fetch("/logout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            }).then(response => {
+                if (response.ok) {
+                    window.location.href = "/login"; // Редирект на страницу логина
+                } else {
+                    console.error("Logout failed");
+                }
+            }).catch(error => console.error("Logout error:", error));
+        });
+    }
+});
+

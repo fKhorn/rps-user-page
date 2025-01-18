@@ -12,37 +12,43 @@
 </head>
 <body>
 
+<!-- 🔹 Кнопка открытия Sidebar -->
+<button id="toggleSidebar" class="btn btn-dark">&#9776; Меню</button>
+
+<!-- 🔹 Sidebar -->
+<nav id="sidebar" class="sidebar">
+<!--    <button id="closeSidebar" class="btn btn-danger">&times;</button>-->
+    <div class="sidebar-content">
+        <button class="btn btn-primary w-100 mb-2" onclick="showUsers()">Список пользователей</button>
+        <button class="btn btn-success w-100" onclick="showAddUser()">Добавить пользователя</button>
+    </div>
+</nav>
+
+<!-- 🔹 Верхняя панель -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand">Панель администратора</a>
         <span class="navbar-text text-white">
-            <strong id="currentUserLogin">TEST</strong> -
+            <strong id="currentUserLogin"></strong> -
             <span id="currentUserRoles"></span>
         </span>
         <form class="d-flex ms-auto" th:action="@{/logout}" method="post">
-            <button class="btn btn-outline-light" type="submit">Logout</button>
+            <button id="logoutButton" class="btn btn-outline-light">Logout</button>
         </form>
     </div>
 </nav>
 
 <div class="container-fluid">
     <div class="row">
-        <nav class="col-md-2 d-md-block bg-light sidebar">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="users-tab" data-bs-toggle="tab" href="#users">Список пользоавателей</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="new-user-tab" data-bs-toggle="tab" href="#new-user">Добавить нового пользователя</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
         <main class="col-md-10 ms-sm-auto px-md-4 tab-content">
             <div class="tab-pane fade show active" id="users">
                 <h2 class="mt-4">Список пользователей</h2>
+                <div id="loadingIndicator" class="text-center" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div id="errorMessage" class="alert alert-danger d-none"></div>
                 <table class="table table-hover">
                     <thead class="table-dark">
                     <tr>

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-//@Component
+@Component
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     @Override
     protected void handle(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
@@ -23,9 +23,9 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
         if (isAdmin) {
-            return "/api/admin";
+            return "/admin";
         } else {
-            return "/api/user";
+            return "/user";
         }
     }
 }
