@@ -1,13 +1,11 @@
 package org.example.rpsuserpage.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.rpsuserpage.enums.Role;
-
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "roles")
