@@ -30,8 +30,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // ==== Методы ====
-
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll()
                 .stream()
@@ -41,17 +39,11 @@ public class UserService {
 
     public UserDTO createUser(UserDTO userDTO) {
         UserEntity userEntity = userMapper.toEntity(userDTO);
-
-        // 🔹 Кодируем пароль перед сохранением
         userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-
-        // 🔹 Получаем список RoleEntity из БД по ролям, переданным в DTO
         Set<RoleEntity> roles = userDTO.getRoles().stream()
                 .map(roleService::findByName)
                 .collect(Collectors.toSet());
-
         userEntity.setRoles(roles);
-
         return userMapper.toDTO(userRepository.save(userEntity));
     }
 
@@ -76,7 +68,7 @@ public class UserService {
         UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
         UserDTO userDTO = userMapper.toDTO(userEntity);
         userDTO.setRoles(userEntity.getRoles().stream()
-                .map(role -> Role.getRole(role.getName().name())) // Преобразуем RoleEntity в String
+                .map(role -> Role.getRole(role.getName().name()))
                 .collect(Collectors.toSet()));
         return userDTO;
     }

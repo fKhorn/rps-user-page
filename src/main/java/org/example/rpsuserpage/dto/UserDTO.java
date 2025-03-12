@@ -20,6 +20,6 @@ public class UserDTO {
     private String gender;
     private String email;
     private String username;
-    private String password; // только для создания или обновления
+    private String password;
     private Set<Role> roles;
 }
