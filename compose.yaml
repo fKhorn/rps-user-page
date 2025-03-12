@@ -1,14 +1,29 @@
 services:
   postgres:
     image: 'postgres:15.3'
-    container_name: 'rps-user-page'
+    container_name: 'rps-db'
+    restart: always
     environment:
-      - 'POSTGRES_DB=rps-user-page'
-      - 'POSTGRES_PASSWORD=postgres'
-      - 'POSTGRES_USER=postgres'
+      - POSTGRES_DB=rps-user-page
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
-      - postgresql_data:/var/lib/postgresql/rps-user-page
+      - postgresql_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: rps-user-page-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/rps-user-page
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+
 volumes:
   postgresql_data:
