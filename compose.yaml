@@ -13,13 +13,13 @@ services:
       - postgresql_data:/var/lib/postgresql/data
 
   app:
-    build:
-      context: .
-      cache_from:
-        - type=local,src=.docker-cache
+    build: .
+#      context: .
+#      cache_from:
+#        - type=local,src=.docker-cache
     container_name: rps-user-page-app
     ports:
-      - "8080:8080"
+      - "8082:8082"
     depends_on:
       - postgres
     environment:
@@ -27,9 +27,54 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
-      SPRING_THYMELEAF_CACHE: "false"
+#    volumes:
+#      - ./build/libs:/app/build/libs
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g  # Настройка памяти для Elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
     volumes:
-      - ./src:/app/src
-      - ./build/libs:/app/build/libs
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - elk_network
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.10.0
+    container_name: logstash
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf  # Монтируем конфиг
+    environment:
+      LS_JAVA_OPTS: "-Xmx512m -Xms512m"
+    networks:
+      - elk_network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.0
+    container_name: kibana
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - elk_network
+
 volumes:
   postgresql_data:
+  es_data:
+
+networks:
+  elk_network:
+    driver: bridge
